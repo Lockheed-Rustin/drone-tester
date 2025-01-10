@@ -1,0 +1,13 @@
+[package]
+name = "drone-tester"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wg_2024 = { git = "https://github.com/WGL-2024/WGL_repo_2024.git", features = ["serialize"] }
+lockheedrustin-drone = { git = "https://github.com/Lockheed-Rustin/drone.git" }
+rusty_drones = { git = "https://github.com/rusty-drone-2024/rusty-drone.git" }
+lazy_static = "1.5.0"
+toml = "0.8.19"
+crossbeam-channel = "0.5.14"
+
