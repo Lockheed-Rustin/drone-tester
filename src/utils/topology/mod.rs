@@ -10,4 +10,3 @@ fn parse_topology(topology_str: &str) -> Config {
 lazy_static! {
     pub static ref DOUBLE_CHAIN: Config = parse_topology(DOUBLE_CHAIN_STR);
 }
-
