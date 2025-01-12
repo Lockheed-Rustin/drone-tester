@@ -1,19 +1,31 @@
 #[macro_export]
 macro_rules! test_drones {
+    (@test $mod:ident ::{ $($f:ident),+ }) => {
+        #[cfg(test)]
+        mod $mod {
+            use super::*;
+            $(
+                #[test]
+                fn $f() {
+                    $crate::with_timeout(
+                        $crate::$mod::$f::<Drone>,
+                        $crate::DEFAULT_TIMEOUT,
+                    );
+                }
+            )*
+        }
+    };
     ($( $dep:ident :: $($p:ident)::+ )*) => {
-        $(
-            #[cfg(test)]
-            mod $dep {
-                #[test]
-                fn test_fragment_forward() {
-                    wg_2024::tests::generic_fragment_forward::<$dep$(::$p)*>();
-                }
+        paste::paste!{
+            $(
+                #[cfg(test)]
+                mod [<test_ $dep>] {
+                    use super::test_drones;
+                    type Drone = $dep$(::$p)*;
 
-                #[test]
-                fn test_fragment_drop() {
-                    wg_2024::tests::generic_fragment_drop::<$dep$(::$p)*>();
+                    test_drones!(@test fragment::{double_chain, crash_double_chain});
                 }
-            }
-        )*
-    }
+            )*
+        }
+    };
 }
