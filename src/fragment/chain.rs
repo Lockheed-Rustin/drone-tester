@@ -4,7 +4,7 @@ use crate::utils::topology::{CID, SID};
 use crate::utils::{data, network, topology};
 use wg_2024::{drone::Drone, packet::NackType};
 
-pub fn double_chain<T: Drone>(timeout: Duration) {
+pub fn receive<T: Drone>(timeout: Duration) {
     let controller = network::init_network::<T>(&topology::DOUBLE_CHAIN);
 
     let route = controller.route(CID, SID);
@@ -19,7 +19,7 @@ pub fn double_chain<T: Drone>(timeout: Duration) {
     assert_eq!(packet, response);
 }
 
-pub fn avoid_crash_double_chain<T: Drone>(timeout: Duration) {
+pub fn avoid_crash<T: Drone>(timeout: Duration) {
     let mut controller = network::init_network::<T>(&topology::DOUBLE_CHAIN);
 
     let route = controller.route(CID, SID);
@@ -40,7 +40,7 @@ pub fn avoid_crash_double_chain<T: Drone>(timeout: Duration) {
     assert_eq!(packet, response);
 }
 
-pub fn crash_double_chain<T: Drone>(timeout: Duration) {
+pub fn crash<T: Drone>(timeout: Duration) {
     let mut controller = network::init_network::<T>(&topology::DOUBLE_CHAIN);
 
     let route = controller.route(CID, SID);
@@ -65,7 +65,7 @@ pub fn crash_double_chain<T: Drone>(timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn error_in_routing_double_chain<T: Drone>(timeout: Duration) {
+pub fn error_in_routing<T: Drone>(timeout: Duration) {
     let controller = network::init_network::<T>(&topology::DOUBLE_CHAIN);
 
     let mut route = controller.route(CID, SID);
@@ -90,7 +90,7 @@ pub fn error_in_routing_double_chain<T: Drone>(timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn error_destination_is_drone_double_chain<T: Drone>(timeout: Duration) {
+pub fn error_destination_is_drone<T: Drone>(timeout: Duration) {
     let controller = network::init_network::<T>(&topology::DOUBLE_CHAIN);
 
     let mut route = controller.route(CID, SID);
@@ -103,5 +103,30 @@ pub fn error_destination_is_drone_double_chain<T: Drone>(timeout: Duration) {
     let response = controller.recv_packet_timeout(CID, timeout).unwrap();
 
     let expected = data::test_nack(hops, NackType::DestinationIsDrone);
+    assert_eq!(expected, response);
+}
+
+pub fn pdr<T: Drone>(timeout: Duration) {
+    let controller = network::init_network::<T>(&topology::DOUBLE_CHAIN);
+
+    let route = controller.route(CID, SID);
+    let hop_len = route.hops.len();
+    let pdr_idx = hop_len / 2;
+    let pdr_id = route.hops[pdr_idx];
+    controller.set_pdr(pdr_id, 1.0);
+    let hops = route
+        .hops
+        .iter()
+        .cloned()
+        .take(pdr_idx + 1)
+        .rev()
+        .collect::<Vec<_>>();
+    let mut packet = data::test_fragment();
+    packet.routing_header = route;
+
+    controller.send_packet(CID, packet);
+    let response = controller.recv_packet_timeout(CID, timeout).unwrap();
+
+    let expected = data::test_nack(hops, NackType::Dropped);
     assert_eq!(expected, response);
 }

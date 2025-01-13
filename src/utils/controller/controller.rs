@@ -112,4 +112,12 @@ impl SimulationController {
         self.nodes.remove(&a);
         self.topology.remove_node(a);
     }
+
+    pub fn set_pdr(&self, a: NodeId, pdr: f32) {
+        let drone = self.get_drone(a).unwrap();
+        drone
+            .drone_send
+            .send(DroneCommand::SetPacketDropRate(pdr))
+            .unwrap();
+    }
 }

@@ -21,11 +21,12 @@ macro_rules! test_drones {
                     type Drone = $dep$(::$p)*;
 
                     test_drones!(@test fragment::{
-                        double_chain,
-                        avoid_crash_double_chain,
-                        crash_double_chain,
-                        error_in_routing_double_chain,
-                        error_destination_is_drone_double_chain
+                        receive,
+                        avoid_crash,
+                        crash,
+                        error_in_routing,
+                        error_destination_is_drone,
+                        pdr
                     });
 
                     test_drones!(@test flood::{
