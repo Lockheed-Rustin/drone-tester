@@ -7,10 +7,7 @@ macro_rules! test_drones {
             $(
                 #[test]
                 fn $f() {
-                    $crate::with_timeout(
-                        $crate::$mod::$f::<Drone>,
-                        $crate::DEFAULT_TIMEOUT,
-                    );
+                    $crate::$mod::$f::<Drone>($crate::DEFAULT_TIMEOUT);
                 }
             )*
         }
@@ -23,7 +20,22 @@ macro_rules! test_drones {
                     use super::test_drones;
                     type Drone = $dep$(::$p)*;
 
-                    test_drones!(@test fragment::{double_chain, crash_double_chain});
+                    test_drones!(@test fragment::{
+                        double_chain,
+                        avoid_crash_double_chain,
+                        crash_double_chain,
+                        error_in_routing_double_chain,
+                        error_destination_is_drone_double_chain
+                    });
+
+                    test_drones!(@test flood::{
+                        double_chain,
+                        star,
+                        butterfly,
+                        tree,
+                        subnet_star,
+                        subnet_triangle
+                    });
                 }
             )*
         }

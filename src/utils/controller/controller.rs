@@ -1,7 +1,7 @@
-use crossbeam_channel::{Receiver, Sender};
+use crossbeam_channel::{Receiver, RecvTimeoutError, Sender};
 use petgraph::algo::astar;
 use petgraph::prelude::UnGraphMap;
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 use wg_2024::{
     controller::{DroneCommand, DroneEvent},
     network::{NodeId, SourceRoutingHeader},
@@ -57,11 +57,6 @@ impl SimulationController {
         }
     }
 
-    pub fn with_route(&self, a: NodeId, b: NodeId, mut packet: Packet) -> Packet {
-        packet.routing_header = self.route(a, b);
-        packet
-    }
-
     pub fn send_packet(&self, a: NodeId, mut packet: Packet) {
         let host = self.get_host(a).unwrap();
         match packet.pack_type {
@@ -78,9 +73,13 @@ impl SimulationController {
         }
     }
 
-    pub fn recv_packet(&self, a: NodeId) -> Packet {
+    pub fn recv_packet_timeout(
+        &self,
+        a: NodeId,
+        timeout: Duration,
+    ) -> Result<Packet, RecvTimeoutError> {
         let host = self.get_host(a).unwrap();
-        host.packet_recv.recv().unwrap()
+        host.packet_recv.recv_timeout(timeout)
     }
 
     pub fn get_host(&self, a: NodeId) -> Option<&NodeHost> {
