@@ -73,6 +73,10 @@ impl SimulationController {
         }
     }
 
+    pub fn send_packet_to(&self, a: NodeId, packet: Packet) {
+        self.nodes[&a].packet_send.send(packet).unwrap();
+    }
+
     pub fn recv_packet_timeout(
         &self,
         a: NodeId,
@@ -111,6 +115,11 @@ impl SimulationController {
         }
         self.nodes.remove(&a);
         self.topology.remove_node(a);
+    }
+
+    pub fn send_crash(&mut self, a: NodeId) {
+        let drone = self.get_drone(a).unwrap();
+        drone.drone_send.send(DroneCommand::Crash).unwrap();
     }
 
     pub fn set_pdr(&self, a: NodeId, pdr: f32) {

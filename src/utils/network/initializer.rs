@@ -8,7 +8,7 @@ use wg_2024::{
     config::Config, controller::DroneEvent, drone::Drone, network::NodeId, packet::Packet,
 };
 
-pub fn init_network<T: Drone>(config: &Config) -> SimulationController {
+pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
     let topology = init_topology(config);
     let mut nodes = HashMap::new();
     let mut packets = HashMap::new();
@@ -24,7 +24,7 @@ pub fn init_network<T: Drone>(config: &Config) -> SimulationController {
         packets.insert(server.id, unbounded());
     }
 
-    init_drones::<T>(config, &mut nodes, &packets, drone_send.clone());
+    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone());
 
     for client in config.client.iter() {
         let neighbor_packet_send = client
@@ -68,7 +68,7 @@ pub fn init_network<T: Drone>(config: &Config) -> SimulationController {
     SimulationController::new(nodes, drone_recv, topology)
 }
 
-fn init_drones<T: Drone>(
+fn init_drones<D: Drone>(
     config: &Config,
     nodes: &mut HashMap<NodeId, Node>,
     packets: &HashMap<NodeId, (Sender<Packet>, Receiver<Packet>)>,
@@ -97,7 +97,7 @@ fn init_drones<T: Drone>(
         let drone_pdr = drone.pdr;
 
         thread::spawn(move || {
-            T::new(
+            D::new(
                 drone_id,
                 controller_send,
                 controller_recv,

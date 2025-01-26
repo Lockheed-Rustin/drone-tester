@@ -6,8 +6,10 @@ use wg_2024::network::NodeId;
 /// I have chose this value to be 0.
 pub const CID: NodeId = 0;
 /// THIS IS THE DEFAULT SERVER ID EVERY TOPOLOGY.
-/// I have chose this value to be 1
+/// I have chose this value to be 1.
 pub const SID: NodeId = 1;
+/// THIS ID SHOULD NOT BE PRESENT IN ANY TOPOLOGY.
+pub const UNKNOWN_ID: NodeId = NodeId::MAX;
 
 const DOUBLE_CHAIN_STR: &str = include_str!("topologies/double-chain.toml");
 const STAR_STR: &str = include_str!("topologies/star.toml");
