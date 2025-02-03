@@ -8,8 +8,3 @@ mod utils;
 
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_millis(250);
 
-// TODO: remove
-test_drones!(
-    lockheedrustin_drone::LockheedRustin,
-    rusty_drones::RustyDrone
-);

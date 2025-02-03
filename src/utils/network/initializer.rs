@@ -2,8 +2,8 @@ use crate::utils::controller::{
     Node, NodeDrone, NodeHost, NodeType, SimulationController, Topology,
 };
 use crossbeam_channel::{unbounded, Receiver, Sender};
+use rayon::{ThreadPool, ThreadPoolBuilder};
 use std::collections::HashMap;
-use std::thread;
 use wg_2024::{
     config::Config, controller::DroneEvent, drone::Drone, network::NodeId, packet::Packet,
 };
@@ -13,6 +13,8 @@ pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
     let mut nodes = HashMap::new();
     let mut packets = HashMap::new();
     let (drone_send, drone_recv) = unbounded();
+
+    let pool = ThreadPoolBuilder::new().build().unwrap();
 
     for drone in config.drone.iter() {
         packets.insert(drone.id, unbounded());
@@ -24,7 +26,7 @@ pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
         packets.insert(server.id, unbounded());
     }
 
-    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone());
+    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone(), &pool);
 
     for client in config.client.iter() {
         let neighbor_packet_send = client
@@ -65,7 +67,7 @@ pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
         );
     }
 
-    SimulationController::new(nodes, drone_recv, topology)
+    SimulationController::new(nodes, drone_recv, topology, pool)
 }
 
 fn init_drones<D: Drone>(
@@ -73,6 +75,7 @@ fn init_drones<D: Drone>(
     nodes: &mut HashMap<NodeId, Node>,
     packets: &HashMap<NodeId, (Sender<Packet>, Receiver<Packet>)>,
     controller_send: Sender<DroneEvent>,
+    pool: &ThreadPool,
 ) {
     for drone in config.drone.iter() {
         // controller
@@ -96,7 +99,7 @@ fn init_drones<D: Drone>(
         let drone_id = drone.id;
         let drone_pdr = drone.pdr;
 
-        thread::spawn(move || {
+        std::thread::spawn(move || {
             D::new(
                 drone_id,
                 controller_send,

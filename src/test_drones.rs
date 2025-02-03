@@ -3,7 +3,7 @@ macro_rules! test_drones {
     (@test $mod:ident ::{ $($f:ident),+ }) => {
         #[cfg(test)]
         mod $mod {
-            use super::*;
+            use super::Drone;
             $(
                 #[test]
                 fn $f() {
@@ -12,15 +12,14 @@ macro_rules! test_drones {
             )*
         }
     };
-    ($( $dep:ident :: $($p:ident)::+ ),*) => {
+    ($( $dep:ident :: $($p:ident)::+, )*) => {
         paste::paste!{
             $(
                 #[cfg(test)]
                 mod [<test_ $dep>] {
-                    use super::test_drones;
                     type Drone = $dep$(::$p)*;
 
-                    test_drones!(@test fragment::{
+                    $crate::test_drones!(@test fragment::{
                         forward,
                         avoid_crash,
                         crash,
@@ -31,7 +30,7 @@ macro_rules! test_drones {
                         dropped_packets_during_crash
                     });
 
-                    test_drones!(@test flood::{
+                    $crate::test_drones!(@test flood::{
                         double_chain,
                         double_chain_no_initiator,
                         star,
@@ -46,9 +45,12 @@ macro_rules! test_drones {
                         subnet_triangle_no_initiator
                     });
 
-                    test_drones!(@test controller::{
+                    $crate::test_drones!(@test controller::{
                         packet_sent,
-                        packet_dropped
+                        packet_dropped,
+                        shortcut,
+                        no_neighbor_after_drop,
+                        shortcut_packets_during_crash
                     });
                 }
             )*
