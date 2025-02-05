@@ -7,4 +7,3 @@ mod test_drones;
 mod utils;
 
 pub const DEFAULT_TIMEOUT: Duration = Duration::from_millis(250);
-

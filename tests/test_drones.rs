@@ -28,5 +28,3 @@ drone_tester::test_drones!(
     ledron_james::Drone,
     // rf_drone::RustAndFurious
 );
-
-// drone_tester::test_drones!(fungi_drone::FungiDrone,);

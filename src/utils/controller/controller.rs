@@ -1,7 +1,6 @@
 use crossbeam_channel::{Receiver, RecvTimeoutError, Sender};
 use petgraph::algo::astar;
 use petgraph::prelude::UnGraphMap;
-use rayon::ThreadPool;
 use std::{collections::HashMap, time::Duration};
 use wg_2024::{
     controller::{DroneCommand, DroneEvent},
@@ -35,8 +34,6 @@ pub struct SimulationController {
     pub drone_recv: Receiver<DroneEvent>,
 
     pub topology: Topology,
-
-    pub _pool: ThreadPool,
 }
 
 impl SimulationController {
@@ -44,13 +41,11 @@ impl SimulationController {
         nodes: HashMap<NodeId, Node>,
         drone_recv: Receiver<DroneEvent>,
         topology: Topology,
-        pool: ThreadPool,
     ) -> Self {
         Self {
             nodes,
             drone_recv,
             topology,
-            _pool: pool,
         }
     }
 
@@ -138,9 +133,9 @@ impl SimulationController {
 
 impl Drop for SimulationController {
     fn drop(&mut self) {
-        for (id, node) in self.nodes.drain() {
-            if let NodeType::Drone(NodeDrone { drone_send }) = node.node_type {
-                _ = drone_send.send(DroneCommand::Crash);
+        for (&id, node) in self.nodes.iter() {
+            if let NodeType::Drone(NodeDrone { ref drone_send }) = node.node_type {
+                drone_send.send(DroneCommand::Crash).unwrap();
                 for neighbor in self.topology.neighbors(id) {
                     _ = drone_send.send(DroneCommand::RemoveSender(neighbor));
                 }

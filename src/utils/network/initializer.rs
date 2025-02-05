@@ -2,19 +2,17 @@ use crate::utils::controller::{
     Node, NodeDrone, NodeHost, NodeType, SimulationController, Topology,
 };
 use crossbeam_channel::{unbounded, Receiver, Sender};
-use rayon::{ThreadPool, ThreadPoolBuilder};
+use rayon::Scope;
 use std::collections::HashMap;
 use wg_2024::{
     config::Config, controller::DroneEvent, drone::Drone, network::NodeId, packet::Packet,
 };
 
-pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
+pub fn init_network<D: Drone>(scope: &Scope, config: &Config) -> SimulationController {
     let topology = init_topology(config);
     let mut nodes = HashMap::new();
     let mut packets = HashMap::new();
     let (drone_send, drone_recv) = unbounded();
-
-    let pool = ThreadPoolBuilder::new().build().unwrap();
 
     for drone in config.drone.iter() {
         packets.insert(drone.id, unbounded());
@@ -26,7 +24,7 @@ pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
         packets.insert(server.id, unbounded());
     }
 
-    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone(), &pool);
+    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone(), &scope);
 
     for client in config.client.iter() {
         let neighbor_packet_send = client
@@ -67,7 +65,7 @@ pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
         );
     }
 
-    SimulationController::new(nodes, drone_recv, topology, pool)
+    SimulationController::new(nodes, drone_recv, topology)
 }
 
 fn init_drones<D: Drone>(
@@ -75,7 +73,7 @@ fn init_drones<D: Drone>(
     nodes: &mut HashMap<NodeId, Node>,
     packets: &HashMap<NodeId, (Sender<Packet>, Receiver<Packet>)>,
     controller_send: Sender<DroneEvent>,
-    pool: &ThreadPool,
+    scope: &Scope,
 ) {
     for drone in config.drone.iter() {
         // controller
@@ -99,7 +97,7 @@ fn init_drones<D: Drone>(
         let drone_id = drone.id;
         let drone_pdr = drone.pdr;
 
-        std::thread::spawn(move || {
+        scope.spawn(move |_| {
             D::new(
                 drone_id,
                 controller_send,

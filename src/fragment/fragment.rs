@@ -8,11 +8,12 @@
 
 use crate::utils::topology::{CID, SID, UNKNOWN_ID};
 use crate::utils::{data, network, rand_node_in_route};
+use rayon::Scope;
 use std::time::Duration;
 use wg_2024::{config::Config, drone::Drone, packet::NackType};
 
-pub fn forward<D: Drone>(config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(config);
+pub fn forward<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(scope, config);
 
     // packet
     let route = controller.route(CID, SID);
@@ -28,8 +29,8 @@ pub fn forward<D: Drone>(config: &Config, timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn avoid_crash<D: Drone>(config: &Config, timeout: Duration) {
-    let mut controller = network::init_network::<D>(config);
+pub fn avoid_crash<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let mut controller = network::init_network::<D>(scope, config);
 
     // crash drone
     let route = controller.route(CID, SID);
@@ -49,8 +50,8 @@ pub fn avoid_crash<D: Drone>(config: &Config, timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn crash<D: Drone>(config: &Config, timeout: Duration) {
-    let mut controller = network::init_network::<D>(config);
+pub fn crash<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let mut controller = network::init_network::<D>(scope, config);
 
     // packet
     let route = controller.route(CID, SID);
@@ -67,8 +68,8 @@ pub fn crash<D: Drone>(config: &Config, timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn error_in_routing<D: Drone>(config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(config);
+pub fn error_in_routing<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(scope, config);
 
     // packet
     let mut route = controller.route(CID, SID);
@@ -84,8 +85,8 @@ pub fn error_in_routing<D: Drone>(config: &Config, timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn destination_is_drone<D: Drone>(config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(config);
+pub fn destination_is_drone<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(scope, config);
 
     // packet
     let mut route = controller.route(CID, SID);
@@ -101,8 +102,8 @@ pub fn destination_is_drone<D: Drone>(config: &Config, timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn pdr<D: Drone>(config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(config);
+pub fn pdr<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(scope, config);
 
     // packet
     let route = controller.route(CID, SID);
@@ -119,8 +120,8 @@ pub fn pdr<D: Drone>(config: &Config, timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn unexpected_recipient<D: Drone>(config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(config);
+pub fn unexpected_recipient<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(scope, config);
 
     // packet
     let route = controller.route(CID, SID);
@@ -138,8 +139,8 @@ pub fn unexpected_recipient<D: Drone>(config: &Config, timeout: Duration) {
     assert_eq!(expected, response);
 }
 
-pub fn dropped_packets_during_crash<D: Drone>(config: &Config, timeout: Duration) {
-    let mut controller = network::init_network::<D>(config);
+pub fn dropped_packets_during_crash<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
+    let mut controller = network::init_network::<D>(scope, config);
 
     // packet
     let route = controller.route(CID, SID);

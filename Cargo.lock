@@ -249,9 +249,9 @@ checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
 
 [[package]]
 name = "bytes"
-version = "1.9.0"
+version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
+checksum = "f61dac84819c6588b558454b194026eb1f09c293b9036ae9b159e74e73ab6cf9"
 
 [[package]]
 name = "cc"
@@ -397,7 +397,7 @@ dependencies = [
 [[package]]
 name = "d-r-o-n-e_drone"
 version = "0.1.0"
-source = "git+https://github.com/AP-2024-25-D-R-O-N-E/drone.git#63e09fe115e618bfce3cc94bf22a3bbd08b40f83"
+source = "git+https://github.com/AP-2024-25-D-R-O-N-E/drone.git#fdf2c4d4b712d8e793212ff15057d278c3954024"
 dependencies = [
  "colored 2.2.0",
  "crossbeam",
@@ -451,7 +451,7 @@ checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 [[package]]
 name = "dr_ones"
 version = "0.1.0"
-source = "git+https://github.com/Dr-Ones/drone#ac0af7d7db8d0e33c3ecce04a1fe1767af9346a5"
+source = "git+https://github.com/Dr-Ones/drone#5252075546be656b3866fec55a4d3a9054c09015"
 dependencies = [
  "crossbeam-channel",
  "network_node",
@@ -1164,7 +1164,7 @@ dependencies = [
 [[package]]
 name = "lockheedrustin-drone"
 version = "0.1.0"
-source = "git+https://github.com/Lockheed-Rustin/drone.git#98152e84d850d66642ff4070356fb05c372ff540"
+source = "git+https://github.com/Lockheed-Rustin/drone.git#8a2916f14f9f0de4e5246fd302bc210984781ba4"
 dependencies = [
  "crossbeam-channel",
  "rand 0.8.5",
@@ -1251,7 +1251,7 @@ dependencies = [
 [[package]]
 name = "network_node"
 version = "0.1.0"
-source = "git+https://github.com/Dr-Ones/common.git#3ea60c436b22427d4b248d56379c8836e18b3b3e"
+source = "git+https://github.com/Dr-Ones/common.git#cd144f62ffb1660a29f3cdeb2ce5653fb3c1f313"
 dependencies = [
  "crossbeam-channel",
  "once_cell",
@@ -1367,18 +1367,18 @@ dependencies = [
 
 [[package]]
 name = "pin-project"
-version = "1.1.8"
+version = "1.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e2ec53ad785f4d35dac0adea7f7dc6f1bb277ad84a680c7afefeae05d1f5916"
+checksum = "dfe2e71e1471fe07709406bf725f710b02927c9c54b2b5b2ec0e8087d97c327d"
 dependencies = [
  "pin-project-internal",
 ]
 
 [[package]]
 name = "pin-project-internal"
-version = "1.1.8"
+version = "1.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d56a66c0c55993aa927429d0f8a0abfd74f084e4d9c192cffed01e418d83eefb"
+checksum = "f6e859e6e5bd50440ab63c47e3ebabc90f26251f7c73c3d3e837b74a1cc3fa67"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1703,7 +1703,7 @@ checksum = "f7c45b9784283f1b2e7fb61b42047c2fd678ef0960d4f6f1eba131594cc369d4"
 [[package]]
 name = "rusty_drones"
 version = "0.0.0"
-source = "git+https://github.com/rusty-drone-2024/rusty-drone.git#ba26d2aefc398db9cc8df9e2d892f19edb7cc026"
+source = "git+https://github.com/rusty-drone-2024/rusty-drone.git#92e7227593ae3a3c7ad84b57f929ffb709686ea8"
 dependencies = [
  "crossbeam-channel",
  "rand 0.9.0",
@@ -1867,9 +1867,9 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "syn"
-version = "2.0.96"
+version = "2.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5d0adab1ae378d7f53bdebc67a39f1f151407ef230f0ce2883572f5d8985c80"
+checksum = "36147f1a48ae0ec2b5b3bc5b537d267457555a10dc06f3dbc8cb11ba3006d3b1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2068,9 +2068,9 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.22.22"
+version = "0.22.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ae48d6208a266e853d946088ed816055e556cc6028c5e8e2b84d9fa5dd7c7f5"
+checksum = "02a8b472d1a3d7c18e2d61a489aee3453fd9031c33e4f55bd533f4a7adca1bee"
 dependencies = [
  "indexmap",
  "serde",
@@ -2162,9 +2162,9 @@ checksum = "75b844d17643ee918803943289730bec8aac480150456169e647ed0b576ba539"
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.15"
+version = "1.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11cd88e12b17c6494200a9c1b683a04fcac9573ed74cd1b62aeb2727c5592243"
+checksum = "a210d160f08b701c8721ba1c726c11662f877ea6b7094007e1ca9a1041945034"
 
 [[package]]
 name = "url"
@@ -2529,9 +2529,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.6.24"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8d71a593cc5c42ad7876e2c1fda56f314f3754c084128833e64f1345ff8a03a"
+checksum = "7e49d2d35d3fad69b39b94139037ecfb4f359f08958b9c11e7315ce770462419"
 dependencies = [
  "memchr",
 ]

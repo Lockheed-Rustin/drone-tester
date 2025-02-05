@@ -1,6 +1,7 @@
 use crate::utils::controller::SimulationController;
 use crate::utils::topology::CID;
 use crate::utils::{data, network};
+use rayon::Scope;
 use std::collections::HashSet;
 use std::time::Duration;
 use wg_2024::config::Config;
@@ -9,8 +10,13 @@ use wg_2024::network::NodeId;
 use wg_2024::packet::PacketType;
 
 /// assumes the graph is connected
-pub fn assert_topology<D: Drone>(config: &Config, timeout: Duration, with_initiator: bool) {
-    let controller = network::init_network::<D>(config);
+pub fn assert_topology<D: Drone>(
+    scope: &Scope,
+    config: &Config,
+    timeout: Duration,
+    with_initiator: bool,
+) {
+    let controller = network::init_network::<D>(scope, config);
 
     let flood = data::test_flood_request(0, CID, with_initiator);
     controller.send_packet(CID, flood);

@@ -7,7 +7,9 @@ macro_rules! test_drones {
             $(
                 #[test]
                 fn $f() {
-                    $crate::$mod::$f::<Drone>($crate::DEFAULT_TIMEOUT);
+                    rayon::scope(|s| {
+                        $crate::$mod::$f::<Drone>(s, $crate::DEFAULT_TIMEOUT);
+                    });
                 }
             )*
         }
