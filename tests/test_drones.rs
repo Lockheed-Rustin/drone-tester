@@ -1,16 +1,14 @@
 drone_tester::test_drones!(
     // ap2024_rustinpeace_nosounddrone::NoSoundDroneRIP,
     // ap2024_unitn_cppenjoyers_drone::CppEnjoyersDrone,
-    // TODO: uncomment
-    // bagel_bomber::BagelBomber,
+    bagel_bomber::BagelBomber,
     // bobry_w_locie::drone::BoberDrone,
     // d_r_o_n_e_drone::MyDrone,
     // dr_ones::Drone,
     // drone_bettercalldrone::BetterCallDrone,
     // dronegowski::Dronegowski,
     flypath::FlyPath,
-    // TODO: uncomment
-    // fungi_drone::FungiDrone,
+    fungi_drone::FungiDrone,
     // getdroned::GetDroned,
     lockheedrustin_drone::LockheedRustin,
     // null_pointer_drone::MyDrone,
@@ -26,7 +24,6 @@ drone_tester::test_drones!(
     skylink::SkyLinkDrone,
     // trust_drone::TrustDrone,
     // wg_2024_rust::drone::RustDrone,
-    // TODO: uncomment
-    // ledron_james::Drone,
+    ledron_james::Drone,
     // rf_drone::RustAndFurious
 );
