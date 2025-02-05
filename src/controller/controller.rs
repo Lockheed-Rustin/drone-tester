@@ -2,12 +2,11 @@ use crate::utils::{
     data, network, rand_node_in_route,
     topology::{CID, SID, UNKNOWN_ID},
 };
-use rayon::Scope;
 use std::time::Duration;
 use wg_2024::{config::Config, controller::DroneEvent, drone::Drone};
 
-pub fn packet_sent<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(scope, config);
+pub fn packet_sent<D: Drone>(config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(config);
 
     // packet
     let route = controller.route(CID, SID);
@@ -25,8 +24,8 @@ pub fn packet_sent<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) 
     assert_eq!(expected.routing_header.hop_index, hop_len - 1);
 }
 
-pub fn packet_dropped<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(scope, config);
+pub fn packet_dropped<D: Drone>(config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(config);
 
     // packet
     let route = controller.route(CID, SID);
@@ -48,8 +47,8 @@ pub fn packet_dropped<D: Drone>(scope: &Scope, config: &Config, timeout: Duratio
     panic!("no packet dropped received");
 }
 
-pub fn shortcut<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
-    let mut controller = network::init_network::<D>(scope, config);
+pub fn shortcut<D: Drone>(config: &Config, timeout: Duration) {
+    let mut controller = network::init_network::<D>(config);
 
     // packet
     let route = controller.route(CID, SID);
@@ -73,8 +72,8 @@ pub fn shortcut<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
     panic!("no controller shortcut received");
 }
 
-pub fn no_neighbor_after_drop<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
-    let controller = network::init_network::<D>(scope, config);
+pub fn no_neighbor_after_drop<D: Drone>(config: &Config, timeout: Duration) {
+    let controller = network::init_network::<D>(config);
 
     // packet
     let mut route = controller.route(CID, SID);
@@ -97,8 +96,8 @@ pub fn no_neighbor_after_drop<D: Drone>(scope: &Scope, config: &Config, timeout:
     assert_eq!(DroneEvent::ControllerShortcut(expected), response);
 }
 
-pub fn shortcut_packets_during_crash<D: Drone>(scope: &Scope, config: &Config, timeout: Duration) {
-    let mut controller = network::init_network::<D>(scope, config);
+pub fn shortcut_packets_during_crash<D: Drone>(config: &Config, timeout: Duration) {
+    let mut controller = network::init_network::<D>(config);
 
     // packet
     let route = controller.route(CID, SID);

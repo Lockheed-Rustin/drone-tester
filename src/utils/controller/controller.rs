@@ -135,10 +135,10 @@ impl Drop for SimulationController {
     fn drop(&mut self) {
         for (&id, node) in self.nodes.iter() {
             if let NodeType::Drone(NodeDrone { ref drone_send }) = node.node_type {
-                drone_send.send(DroneCommand::Crash).unwrap();
                 for neighbor in self.topology.neighbors(id) {
                     _ = drone_send.send(DroneCommand::RemoveSender(neighbor));
                 }
+                _ = drone_send.send(DroneCommand::Crash);
             }
         }
     }

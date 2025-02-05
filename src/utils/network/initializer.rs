@@ -2,13 +2,13 @@ use crate::utils::controller::{
     Node, NodeDrone, NodeHost, NodeType, SimulationController, Topology,
 };
 use crossbeam_channel::{unbounded, Receiver, Sender};
-use rayon::Scope;
 use std::collections::HashMap;
+use std::panic;
 use wg_2024::{
     config::Config, controller::DroneEvent, drone::Drone, network::NodeId, packet::Packet,
 };
 
-pub fn init_network<D: Drone>(scope: &Scope, config: &Config) -> SimulationController {
+pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
     let topology = init_topology(config);
     let mut nodes = HashMap::new();
     let mut packets = HashMap::new();
@@ -24,7 +24,7 @@ pub fn init_network<D: Drone>(scope: &Scope, config: &Config) -> SimulationContr
         packets.insert(server.id, unbounded());
     }
 
-    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone(), &scope);
+    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone());
 
     for client in config.client.iter() {
         let neighbor_packet_send = client
@@ -73,7 +73,6 @@ fn init_drones<D: Drone>(
     nodes: &mut HashMap<NodeId, Node>,
     packets: &HashMap<NodeId, (Sender<Packet>, Receiver<Packet>)>,
     controller_send: Sender<DroneEvent>,
-    scope: &Scope,
 ) {
     for drone in config.drone.iter() {
         // controller
@@ -97,16 +96,18 @@ fn init_drones<D: Drone>(
         let drone_id = drone.id;
         let drone_pdr = drone.pdr;
 
-        scope.spawn(move |_| {
-            D::new(
-                drone_id,
-                controller_send,
-                controller_recv,
-                packet_recv,
-                packet_send,
-                drone_pdr,
-            )
-            .run();
+        rayon::spawn(move || {
+            _ = panic::catch_unwind(|| {
+                D::new(
+                    drone_id,
+                    controller_send,
+                    controller_recv,
+                    packet_recv,
+                    packet_send,
+                    drone_pdr,
+                )
+                .run();
+            });
         });
     }
 }

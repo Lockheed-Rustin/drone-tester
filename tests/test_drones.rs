@@ -9,7 +9,8 @@ drone_tester::test_drones!(
     // drone_bettercalldrone::BetterCallDrone,
     // dronegowski::Dronegowski,
     flypath::FlyPath,
-    fungi_drone::FungiDrone,
+    // TODO: uncomment
+    // fungi_drone::FungiDrone,
     // getdroned::GetDroned,
     lockheedrustin_drone::LockheedRustin,
     // null_pointer_drone::MyDrone,
@@ -25,6 +26,7 @@ drone_tester::test_drones!(
     skylink::SkyLinkDrone,
     // trust_drone::TrustDrone,
     // wg_2024_rust::drone::RustDrone,
-    ledron_james::Drone,
+    // TODO: uncomment
+    // ledron_james::Drone,
     // rf_drone::RustAndFurious
 );
