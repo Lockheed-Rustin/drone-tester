@@ -1,7 +1,12 @@
-use crate::utils::controller::{
-    Node, NodeDrone, NodeHost, NodeType, SimulationController, Topology,
+use crate::utils::{
+    controller::{Node, NodeDrone, NodeHost, NodeType, SimulationController, Topology},
+    DroneOptions,
 };
 use crossbeam_channel::{unbounded, Receiver, Sender};
+use rayon::{
+    iter::{IntoParallelIterator, ParallelIterator},
+    ThreadPoolBuilder,
+};
 use std::collections::HashMap;
 use std::panic;
 use wg_2024::{
@@ -24,7 +29,25 @@ pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
         packets.insert(server.id, unbounded());
     }
 
-    init_drones::<D>(config, &mut nodes, &packets, drone_send.clone());
+    let options = drone_options(config, &mut nodes, &packets, drone_send.clone());
+    let pool = ThreadPoolBuilder::new().build().unwrap();
+
+    pool.spawn(move || {
+        // ignore drone panic to not crash the whole tester
+        _ = panic::catch_unwind(|| {
+            options.into_par_iter().panic_fuse().for_each(|opt| {
+                D::new(
+                    opt.id,
+                    opt.controller_send,
+                    opt.controller_recv,
+                    opt.packet_recv,
+                    opt.packet_send,
+                    opt.pdr,
+                )
+                .run();
+            })
+        })
+    });
 
     for client in config.client.iter() {
         let neighbor_packet_send = client
@@ -65,51 +88,50 @@ pub fn init_network<D: Drone>(config: &Config) -> SimulationController {
         );
     }
 
-    SimulationController::new(nodes, drone_recv, topology)
+    SimulationController::new(nodes, drone_recv, topology, pool)
 }
 
-fn init_drones<D: Drone>(
+fn drone_options(
     config: &Config,
     nodes: &mut HashMap<NodeId, Node>,
     packets: &HashMap<NodeId, (Sender<Packet>, Receiver<Packet>)>,
     controller_send: Sender<DroneEvent>,
-) {
-    for drone in config.drone.iter() {
-        // controller
-        let (drone_send, controller_recv) = unbounded();
-        nodes.insert(
-            drone.id,
-            Node {
-                packet_send: packets[&drone.id].0.clone(),
-                node_type: NodeType::Drone(NodeDrone { drone_send }),
-            },
-        );
-        let controller_send = controller_send.clone();
-        // packet
-        let packet_recv = packets[&drone.id].1.clone();
-        let packet_send = drone
-            .connected_node_ids
-            .iter()
-            .cloned()
-            .map(|id| (id, packets[&id].0.clone()))
-            .collect();
-        let drone_id = drone.id;
-        let drone_pdr = drone.pdr;
+) -> Vec<DroneOptions> {
+    config
+        .drone
+        .iter()
+        .map(|drone| {
+            // controller
+            let (drone_send, controller_recv) = unbounded();
+            nodes.insert(
+                drone.id,
+                Node {
+                    packet_send: packets[&drone.id].0.clone(),
+                    node_type: NodeType::Drone(NodeDrone { drone_send }),
+                },
+            );
+            let controller_send = controller_send.clone();
+            // packet
+            let packet_recv = packets[&drone.id].1.clone();
+            let packet_send = drone
+                .connected_node_ids
+                .iter()
+                .cloned()
+                .map(|id| (id, packets[&id].0.clone()))
+                .collect();
+            let id = drone.id;
+            let pdr = drone.pdr;
 
-        rayon::spawn(move || {
-            _ = panic::catch_unwind(|| {
-                D::new(
-                    drone_id,
-                    controller_send,
-                    controller_recv,
-                    packet_recv,
-                    packet_send,
-                    drone_pdr,
-                )
-                .run();
-            });
-        });
-    }
+            DroneOptions {
+                id,
+                controller_send,
+                controller_recv,
+                packet_recv,
+                packet_send,
+                pdr,
+            }
+        })
+        .collect()
 }
 
 fn init_topology(config: &Config) -> Topology {

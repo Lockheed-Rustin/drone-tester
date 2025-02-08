@@ -1,10 +1,25 @@
+use crossbeam_channel::{Receiver, Sender};
 use rand::Rng;
-use wg_2024::network::{NodeId, SourceRoutingHeader};
+use std::collections::HashMap;
+use wg_2024::{
+    controller::{DroneCommand, DroneEvent},
+    network::{NodeId, SourceRoutingHeader},
+    packet::Packet,
+};
 
 pub mod controller;
 pub mod data;
 pub mod network;
 pub mod topology;
+
+pub struct DroneOptions {
+    id: NodeId,
+    controller_send: Sender<DroneEvent>,
+    controller_recv: Receiver<DroneCommand>,
+    packet_recv: Receiver<Packet>,
+    packet_send: HashMap<NodeId, Sender<Packet>>,
+    pdr: f32,
+}
 
 pub fn rand_node_in_route(route: &SourceRoutingHeader) -> (NodeId, usize) {
     let hop_len = route.hops.len();

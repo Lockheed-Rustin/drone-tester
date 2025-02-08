@@ -1,6 +1,7 @@
 use crossbeam_channel::{Receiver, RecvTimeoutError, Sender};
 use petgraph::algo::astar;
 use petgraph::prelude::UnGraphMap;
+use rayon::ThreadPool;
 use std::{collections::HashMap, time::Duration};
 use wg_2024::{
     controller::{DroneCommand, DroneEvent},
@@ -34,6 +35,9 @@ pub struct SimulationController {
     pub drone_recv: Receiver<DroneEvent>,
 
     pub topology: Topology,
+
+    #[allow(unused)]
+    pool: ThreadPool,
 }
 
 impl SimulationController {
@@ -41,11 +45,13 @@ impl SimulationController {
         nodes: HashMap<NodeId, Node>,
         drone_recv: Receiver<DroneEvent>,
         topology: Topology,
+        pool: ThreadPool,
     ) -> Self {
         Self {
             nodes,
             drone_recv,
             topology,
+            pool,
         }
     }
 

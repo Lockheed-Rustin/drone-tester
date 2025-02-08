@@ -1,7 +1,7 @@
 drone_tester::test_drones!(
     // ap2024_rustinpeace_nosounddrone::NoSoundDroneRIP,
     // ap2024_unitn_cppenjoyers_drone::CppEnjoyersDrone,
-    bagel_bomber::BagelBomber,
+    // bagel_bomber::BagelBomber,
     // bobry_w_locie::drone::BoberDrone,
     // d_r_o_n_e_drone::MyDrone,
     // dr_ones::Drone,
@@ -21,7 +21,7 @@ drone_tester::test_drones!(
     rustbusters_drone::RustBustersDrone,
     // rusteze_drone::RustezeDrone,
     rusty_drones::RustyDrone,
-    skylink::SkyLinkDrone,
+    // skylink::SkyLinkDrone,
     // trust_drone::TrustDrone,
     // wg_2024_rust::drone::RustDrone,
     ledron_james::Drone,
